@@ -1,0 +1,21 @@
+name: vue-push
+services:
+  app:
+    container_name: vue-push
+    image: node:latest
+    working_dir: /app
+    entrypoint: /bin/bash
+    ports:
+      - 3000:3000
+    volumes:
+      - ../:/app
+      - ../dist:/app/dist
+    tty: true
+  app-dist:
+    container_name: vue-push-dist
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
+      - ../dist:/app
+    ports:
+      - 3001:8080
