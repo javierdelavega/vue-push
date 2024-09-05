@@ -180,13 +180,12 @@
       });
   }
 
-  function addMessagesEventListener() {
-    navigator.serviceWorker.addEventListener('message', event => {
-    // event is a MessageEvent object
-      console.log(`Received message from serviceworker: ${event.data}`);
+  function addBroadcastChannelEventListener() {
+    const channel = new BroadcastChannel('firebaseSwChannel');
+    channel.onmessage = (event) => {
+      console.log('BroadcastChannel message received');
       playTaskAlert();
-    });
-
+    };
   }
 
   watch(registered, (newValue, oldValue) => {
@@ -198,7 +197,7 @@
       checkRegistered();
       requestNotificationPermission();
       getFcmToken();
-      addMessagesEventListener();
+      addBroadcastChannelEventListener();
   })
 
 </script>

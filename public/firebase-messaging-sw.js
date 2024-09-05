@@ -44,16 +44,37 @@ messaging.onBackgroundMessage((payload) => {
     requireInteraction: true
   };
 
+  // Call to the backend notification received confirmation endpoint
+const options = {
+  method: 'POST',
+  headers: {
+  'Content-Type': 'application/json',
+  }
+};
+
+const confirmationUrl = 'https://vue-push-back.smartidea.es/notifications/confirm/' + payload.data.message_id;
+console.log('Sending confirmation request url: ', confirmationUrl);
+fetch(confirmationUrl, options)
+  .then(data => {
+      if (!data.ok) {
+        throw Error(data.status);
+       }
+       return data.json();
+      }).then(update => {
+        console.log(update);
+      }).catch(e => {
+        console.log(e);
+      });
+
+  // Show notification
   self.registration.showNotification(notificationTitle, notificationOptions);
 
-  self.clients.matchAll({includeUncontrolled: true}).then(clients => {
-      // Notify the client a notification was received
-      clients.forEach(client => {
-          client.postMessage('message')
-      })
-  })
+  // Notify the foreground app
+  const channel = new BroadcastChannel('firebaseSwChannel');
+  channel.postMessage('notification');
 });
 
+// Action when user clicks on notification
 self.onnotificationclick = (event) => {
   event.notification.close();
 
